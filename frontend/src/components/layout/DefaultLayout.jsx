@@ -24,7 +24,6 @@ export default function DefaultLayout() {
     useEffect(() => {
         apiService.get('/user')
             .then((res) => {
-                console.log('res', res.data)
                 setUser(res.data);
             }).catch((error) => {
             console.log('error', error)

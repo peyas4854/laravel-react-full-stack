@@ -1,7 +1,6 @@
 import axios from 'axios';
 const ApiService = {
     init() {
-        console.log('baseURL', import.meta.env.VITE_API_BASE_URL);
         const token  = localStorage.getItem('ACCESS_TOKEN');
         axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
