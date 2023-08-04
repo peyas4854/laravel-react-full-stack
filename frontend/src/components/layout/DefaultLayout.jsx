@@ -1,6 +1,37 @@
-import {Link, Outlet} from "react-router-dom";
+import {Link, Navigate, Outlet} from "react-router-dom";
+import {useStateContext} from "../../context/ContextProvicer.jsx";
+import {useEffect} from "react";
+import apiService from "../../service/api.service.js";
 
 export default function DefaultLayout() {
+    // user context api
+    const {user, token, setUser, setToken} = useStateContext()
+    if (!token) {
+        return <Navigate to="/login"/>
+    }
+    const logout = (e) => {
+        e.preventDefault();
+        apiService.post('/logout')
+            .then(() => {
+                //set user and token in context api
+                setUser({});
+                setToken(null);
+            }).catch((error) => {
+            console.log('error', error)
+        })
+    }
+   // on load component call user api for get authenticated user
+    useEffect(() => {
+        apiService.get('/user')
+            .then((res) => {
+                console.log('res', res.data)
+                setUser(res.data);
+            }).catch((error) => {
+            console.log('error', error)
+        })
+
+    }, [])
+
     return (
         <div>
             <div id="defaultLayout">
@@ -14,7 +45,8 @@ export default function DefaultLayout() {
                             Header
                         </div>
                         <div>
-                            User Info
+                            {user.name}
+                            <a href="#" onClick={logout} className=" btn-logout"> Logout</a>
                         </div>
                     </header>
                     <main>

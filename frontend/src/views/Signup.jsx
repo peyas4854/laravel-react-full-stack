@@ -1,6 +1,7 @@
 import {Link} from "react-router-dom";
 import {useRef, useState} from "react";
 import apiService from "../service/api.service.js";
+import {useStateContext} from "../context/ContextProvicer.jsx";
 
 export default function Signup() {
     const nameRef = useRef();
@@ -8,7 +9,7 @@ export default function Signup() {
     const passwordRef = useRef();
     const passwordConfirmationRef = useRef();
     const [errors, setErrors] = useState(null);
-
+    const {setUser,setToken} = useStateContext();
 
     const onSubmit = (ev) => {
         ev.preventDefault();
@@ -21,10 +22,10 @@ export default function Signup() {
         console.log('payload', payload);
         apiService.post('/register', payload)
             .then((res) => {
-                console.log('res', res)
+                console.log('response', res.data);
+                setUser(res.data.user);
+                setToken(res.data.token);
             }).catch((error) => {
-            console.log('error', error)
-            console.log('res', error.response)
             if (error.response.status == 422) {
                 setErrors(error.response.data.errors);
             }
