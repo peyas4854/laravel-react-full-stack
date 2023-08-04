@@ -1,9 +1,34 @@
 import {Link} from "react-router-dom";
+import {useRef, useState} from "react";
+import apiService from "../service/api.service.js";
 
-export default function Signup(){
-    const onSubmit = (ev)=>{
+export default function Signup() {
+    const nameRef = useRef();
+    const emailRef = useRef();
+    const passwordRef = useRef();
+    const passwordConfirmationRef = useRef();
+    const [errors, setErrors] = useState(null);
+
+
+    const onSubmit = (ev) => {
         ev.preventDefault();
-        console.log('submit click');
+        const payload = {
+            name: nameRef.current.value,
+            email: emailRef.current.value,
+            password: passwordRef.current.value,
+            password_confirmation: passwordConfirmationRef.current.value,
+        }
+        console.log('payload', payload);
+        apiService.post('/register', payload)
+            .then((res) => {
+                console.log('res', res)
+            }).catch((error) => {
+            console.log('error', error)
+            console.log('res', error.response)
+            if (error.response.status == 422) {
+                setErrors(error.response.data.errors);
+            }
+        })
     }
     return (
         <div className="login-signup-form animated fadeInDown">
@@ -13,10 +38,18 @@ export default function Signup(){
                     <h1 className="title">
                         SignUp
                     </h1>
-                    <input type="text" placeholder="Name" />
-                    <input type="email" placeholder="Email" />
-                    <input type="password" placeholder="Password" />
-                    <input type="password" placeholder="Password Confirmation" />
+
+                    {
+                        errors && <div className="alert">
+                            { Object.keys(errors).map(key =>(
+                                <p key={key}>  { errors[key][0] }</p>
+                            ))}
+                        </div>
+                    }
+                    <input ref={nameRef} type="text" placeholder="Name"/>
+                    <input ref={emailRef} type="email" placeholder="Email"/>
+                    <input ref={passwordRef} type="password" placeholder="Password"/>
+                    <input ref={passwordConfirmationRef} type="password" placeholder="Password Confirmation"/>
                     <button className="btn btn-block">SignUp</button>
                     <p className="message">
                         Already Registered ? <Link to="/login"> Sign In</Link>
