@@ -5,7 +5,8 @@ import apiService from "../../service/api.service.js";
 
 export default function DefaultLayout() {
     // user context api
-    const {user, token, setUser, setToken} = useStateContext()
+    const {user, token, setUser, setToken,notification} = useStateContext()
+
     if (!token) {
         return <Navigate to="/login"/>
     }
@@ -52,6 +53,14 @@ export default function DefaultLayout() {
                         <Outlet/>
                     </main>
                 </div>
+
+                    {
+                        notification &&
+                        <div className="notification">
+                            { notification }
+                        </div>
+                    }
+
             </div>
         </div>
     )
