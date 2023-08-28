@@ -2,23 +2,29 @@ import {useEffect, useState} from "react";
 import apiService from "../service/api.service.js";
 import {Link} from "react-router-dom";
 import {useStateContext} from "../context/ContextProvicer.jsx";
+import Pagination from "react-js-pagination";
+
 
 export default function Users() {
 
     const [users, setUsers] = useState();
     const [loading, setLoading] = useState(false);
     const {setNotification} = useStateContext();
+    const [pagination,setPagination] =useState({});
 
     useEffect(() => {
         getUsers();
     }, []);
-    const getUsers = () => {
+    const getUsers = (pageNumber = 1) => {
         setLoading(true);
-        apiService.get('/users')
+        const url = `/users?page=${pageNumber}`;
+        apiService.get(url)
             .then((res) => {
                 setLoading(false);
-                console.log('res', res.data.data)
                 setUsers(res.data.data);
+                setPagination(res.data.meta);
+                console.log('res', res.data.meta)
+                console.log('pagination', pagination)
             }).catch((error) => {
             setLoading(false);
         })
@@ -89,7 +95,17 @@ export default function Users() {
                     }
 
                 </table>
-
+                <div>
+                    <Pagination
+                        activePage={pagination.current_page}
+                        itemsCountPerPage={pagination.per_page}
+                        totalItemsCount={pagination.total}
+                        pageRangeDisplayed={5}
+                        onChange={ (pageNumber)=> getUsers(pageNumber)}
+                        itemClass="page-item"
+                        linkClass="page-link"
+                    />
+                </div>
 
             </div>
         </div>
